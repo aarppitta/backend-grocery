@@ -1,0 +1,38 @@
+version: "x.x"
+services:
+  
+
+  redis:
+    image: xxxxxxxxxxxxxx
+    restart: xxxxxxxxxxxxxx
+    container_name: xxxxxxxxxxxxxx
+    hostname: xxxxxxxxxxxxxx
+    ports:
+      - xxxxxxxxxxxxxx
+
+  authservice:
+    build:
+      context: .
+      dockerfile: xxxxxxxxxxxxxx
+    container_name: xxxxxxxxxxxxxx
+    depends_on:
+      - xxxxxxxxxxxxxx
+    ports:
+      - xxxxxxxxxxxxxx
+    restart: xxxxxxxxxxxxxx
+    environment:
+      - APP_PORT=xxxxxxxxxxxxxx
+      - APP_HOST=0.0.0.0
+      - NODE_ENV=xxxxxxxxxxxxxx
+      - BASE_URL=https://xxxxxxxxxxxxxx
+      - DATABASE_URL=xxxxxxxxxxxxxx
+      - REDIS_HOST=xxxxxxxxxxxxxx
+      - ACM_JWT_SECRET_KEY=xxxxxxxxxxxxxx
+      - ACM_TOKEN_LIFETIME=xxxxxxxxxxxxxx
+      - ACM_TOKEN_ISSUER=xxxxxxxxxxxxxx
+      - TEST_EMAIL=xxxxxxxxxxxxxx
+      - TEST_PASSWORD=xxxxxxxxxxxxxx
+      - TEST_NEW_PASSWORD=xxxxxxxxxxxxxx
+
+volumes:
+  xxxxxxxxxxxxxx
