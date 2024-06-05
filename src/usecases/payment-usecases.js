@@ -20,7 +20,7 @@ export const listPayments = async (userId, { searchKey }, select, skip = 0, limi
     
     let query = mysqlService
         .selectFrom('payment')
-        .select(select || ["payment_id", "payment_name","payment_description", "created_at", "updated_at"])
+        .select(select || ["payment_id", "amount", "created_at", "updated_at"])
         .where((st) => st.and([ st("is_deleted", "=", false) , st("user_id", "=", userId) ]))
         .orderBy('payment_name')
         .limit(limit)

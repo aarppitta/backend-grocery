@@ -37,10 +37,10 @@ const isNumericInt = (field) =>
  * @type {Array} - The validation array.
  */
 
-export const contactValidator = [body("contact_name").notEmpty().withMessage("contact_name is required").isLength({ max: 20 }).withMessage("contact_name must not be more than 20 characters"),
-                                body("contact_email").notEmpty().withMessage("contact_email is required").isEmail().withMessage("contact_email must be a valid email"),
-                                body("contact_mobile").notEmpty().withMessage("contact_mobile is required").isLength({ max: 15 }).withMessage("contact_mobile must not be more than 15 characters"),
-                                body("contact_message").notEmpty().withMessage("contact_message is required").isLength({ max: 200 }).withMessage("contact_message must not be more than 200 characters"),
+export const contactValidator = [body("fname").notEmpty().withMessage("First name is required").isLength({ max: 20 }).withMessage("First name must not be more than 20 characters"),
+body("lname").notEmpty().withMessage("Last name is required").isLength({ max: 20 }).withMessage("Last name must not be more than 20 characters"),
+                                body("email").notEmpty().withMessage("email is required").isEmail().withMessage("email must be a valid email"),
+                                body("message").notEmpty().withMessage("message is required").isLength({ max: 200 }).withMessage("message must not be more than 200 characters"),
                                 errorValidator];
 
 /**
@@ -48,7 +48,7 @@ export const contactValidator = [body("contact_name").notEmpty().withMessage("co
  * @type {Array} - The validation array.
  */
 
-export const contactIdValidator = [param("contactId").notEmpty().withMessage("contact id is required"), isNumericInt("contactId"), errorValidator];
+export const contactIdValidator = [param("contactId").notEmpty().withMessage(" contactId is required"), isNumericInt("contactId"), errorValidator];
 
 /**
     *  get all contact validator

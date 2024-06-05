@@ -72,9 +72,9 @@ const getPaymentByIdController = async (req, res) => {
 
 const createPaymentController = async (req, res) => {
     const userId = req.auth.user.user_id;
-    const { payment_method, payment_status, payment_amount, payment_date, payment_time, payment_description } = req.body;
+    const { amount } = req.body;
     try {
-        const response = await createPayment(userId, { payment_method, payment_status, payment_amount, payment_date, payment_time, payment_description }, { mysqlService, redisService });
+        const response = await createPayment(userId, { amount }, { mysqlService, redisService });
         res.status(200).json({
         message: "payment created",
         data: response,
@@ -98,7 +98,7 @@ const createPaymentController = async (req, res) => {
 const updatePaymentController = async (req, res) => {
     const userId = req.auth.user.user_id;
     const paymentId = parseInt(req.params.paymentId);
-    const { payment_method, payment_status, payment_amount, payment_date, payment_time, payment_description } = req.body;
+    const { amount } = req.body;
     try {
         const payment_exist = await getPaymentById(userId, paymentId, null, { mysqlService, redisService });
         if (payment_exist == null) {
@@ -107,7 +107,7 @@ const updatePaymentController = async (req, res) => {
         data: null,
       });
     }
-        const response = await updatePayment(userId, paymentId, { payment_method, payment_status, payment_amount, payment_date, payment_time, payment_description }, { mysqlService, redisService });
+        const response = await updatePayment(userId, paymentId, { amount }, { mysqlService, redisService });
         res.status(200).json({
         message: "payment updated",
         data: response,

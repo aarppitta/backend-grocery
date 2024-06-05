@@ -10,7 +10,7 @@ afterAll(async () => {
   await mysqlDisconnect();
 });
 
-const SERVICE_ROUTE = "v1/category";
+const SERVICE_ROUTE = "v1/user/address";
 let authToken = null;
 
 beforeAll(async () => {
@@ -18,18 +18,18 @@ beforeAll(async () => {
 });
 
 /**
- * Test user's category Route
+ * Test user's payment Route
  */
-describe("User category Route", () => {
+describe("User payment Route", () => {
 
-  let categoryId = null;
+  let paymentId = null;
   
   /**
-   * search category by name
+   * search payment by name
    * It should respond with success message
    */
 
-  test("GET v1/category : To search a category by name", async () => {
+  test("GET v1/payment : To search a payment by name", async () => {
     let request = createRequest(process.env.BASE_URL, SERVICE_ROUTE + `?search_key=${base64.encode("abcd")}`, "get", HttpClient.SERVER, authToken);
     const response = await server(expressApp)
       .get("/" + request.url)
@@ -37,89 +37,94 @@ describe("User category Route", () => {
       expect(response.statusCode).toBe(200);
       const data = response.body.data;
       for (let i = 0; i < data.length; i++) {
-        expect(data[i].category_id);
-        expect(data[i].name);
-        expect(data[i].description);
-        expect(data[i].image);
+        expect(data[i].amount);
+      }
+    });
+
+
+  /**
+   * search payment by name with pagination
+   * It should respond with success message
+   */
+
+  test("GET v1/payment : To search a payment by name", async () => {
+    let request = createRequest(process.env.BASE_URL, SERVICE_ROUTE + `?search_key=${base64.encode("abcd")}&skip=0&limit=1`, "get", HttpClient.SERVER, authToken);
+    const response = await server(expressApp)
+      .get("/" + request.url)
+      .set({ ...request.headers, "user-agent": "jest" });
+      expect(response.statusCode).toBe(200);
+      const data = response.body.data;
+      for (let i = 0; i < data.length; i++) {
+        expect(data[i].amount);
+        
       }
     });
   
   /**
-   * Test to create category,
+   * Test to create payment,
    * It should respond with success message
    */
-  test("POST v1/category : To create a category", async () => {
+  test("POST v1/payment : To create a payment", async () => {
     let request = createRequest(process.env.BASE_URL, SERVICE_ROUTE, "post", HttpClient.SERVER, authToken);
     let response = await server(expressApp)
       .post("/" + request.url)
       .send({
-        name: "abcd",
-        image: "https://fastly.picsum.photos/id/504/200/300.jpg?hmac=mycti8qYrnGcag5zUhsVOq7hQwb__R-Zf--aBJAH_ec",
-        description: "test category description"
+        amount: 22,
+        
       })
       .set({ ...request.headers, "user-agent": "jest" });
     expect(response.statusCode).toBe(201);
     const data = response.body.data;
-   // expect(data.category_id);
-    expect(data.name);
-    expect(data.description);
-    expect(data.image);
-    categoryId = data.category_id;
+    expect(data.amount);
+    paymentId = data.payment_id;
   });
 
   /**
-   * Test to get category list,
+   * Test to get payment list,
    * It should respond with success message
    */
-  test("GET v1/category : To get a category", async () => {
-    let request = createRequest(process.env.BASE_URL, SERVICE_ROUTE+"/"+ categoryId, "get", HttpClient.SERVER, authToken);
+  test("GET v1/payment : To get a payment", async () => {
+    let request = createRequest(process.env.BASE_URL, SERVICE_ROUTE+"/"+paymentId, "get", HttpClient.SERVER, authToken);
     let response = await server(expressApp)
       .get("/" + request.url)
       .set({ ...request.headers, "user-agent": "jest" });
     expect(response.statusCode).toBe(200);
     const data = response.body.data;
-    expect(data.category_id);
-    expect(data.name);
-    expect(data.description);
-    expect(data.image);
-    categoryId = data.category_id;
+    expect(data.amount);
+    paymentId = data.payment_id;
   });
 
   /**
-   * Test to update category,
+   * Test to update payment,
    * It should respond with success message
    */
-  test("patch v1/category : To update a category", async () => {
-    let request = createRequest(process.env.BASE_URL, SERVICE_ROUTE+"/"+categoryId, "patch", HttpClient.SERVER, authToken);
+  test("patch v1/payment : To update a payment", async () => {
+    let request = createRequest(process.env.BASE_URL, SERVICE_ROUTE+"/"+paymentId, "patch", HttpClient.SERVER, authToken);
     let response = await server(expressApp)
       .patch("/" + request.url)
       .send({
-        name: "abcde",
-        image: "https://fastly.picsum.photos/id/504/200/300.jpg?hmac=mycti8qYrnGcag5zUhsVOq7hQwb__R-Zf--aBJAH_ec",
-        description: "test category description11"
+        amount: 55,
+
       })
       .set({ ...request.headers, "user-agent": "jest" });
     expect(response.statusCode).toBe(200);
     const data = response.body.data;
-    expect(data.name);
-    expect(data.description);
-    expect(data.image);
-    categoryId = data.category_id;
+    expect(data.amount);
+    paymentId = data.payment_id;
   });
 
   /**
-   * Test to delete category,
+   * Test to delete payment,
    * It should respond with success message
    */
-  test("DELETE v1/category : To delete a category", async () => {
-    let request = createRequest(process.env.BASE_URL, SERVICE_ROUTE + "/" + categoryId, "delete", HttpClient.SERVER, authToken);
+  test("DELETE v1/payment : To delete a address", async () => {
+    let request = createRequest(process.env.BASE_URL, SERVICE_ROUTE+"/"+paymentId, "delete", HttpClient.SERVER, authToken);
     let response = await server(expressApp)
       .delete("/" + request.url)
       .set({ ...request.headers, "user-agent": "jest" });
     expect(response.statusCode).toBe(200);
     const data = response.body.data;
-    expect(data.category_id);
-    categoryId = data.category_id;
+    expect(data.payment_id);
   });
 
 });

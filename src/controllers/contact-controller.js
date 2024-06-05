@@ -5,6 +5,9 @@ import { metricsLogError, parseError } from 'prom-nodejs-client';
 import mysqlService from '../services/mysql-service.js';
 import redisService from '../services/redis-service.js';
 
+// import helper functions
+import base64Helper from '../helpers/base64-helper.js';
+
 // use cases imports & constants
 import { createContact, deleteContact, getContactById, listContacts, updateContact } from '../usecases/contact-usecases.js';
 
@@ -16,11 +19,10 @@ import { createContact, deleteContact, getContactById, listContacts, updateConta
 
 
 const listContactsController = async (req, res) => {
-    const userId = req.auth.user.user_id;
     const { skip, limit } = req.query;
     const searchKey = base64Helper.decode(req.query.search_key);
     try {
-        const response = await listContacts(userId, { searchKey }, null, skip, limit, { mysqlService, redisService });
+        const response = await listContacts({ searchKey }, null, skip, limit, { mysqlService, redisService });
         res.status(200).json({
         message: "contacts retrieved",
         data: response,
@@ -43,10 +45,9 @@ const listContactsController = async (req, res) => {
 
 
 const getContactByIdController = async (req, res) => {
-    const userId = req.auth.user.user_id;
     const contactId = parseInt(req.params.contactId);
     try {
-        const response = await getContactById(userId, contactId, null, { mysqlService, redisService });
+        const response = await getContactById(contactId, null, { mysqlService, redisService });
 
         if (response == null) {
         return res.status(404).json({

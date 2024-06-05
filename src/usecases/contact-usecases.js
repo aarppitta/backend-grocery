@@ -1,10 +1,10 @@
 import { REDIS_DEFAULT_EXPIRY } from "../resources/constants.js";
-
-import { mySQL } from "../services/mysql-service.js";
+import  base64Helper from "../helpers/base64-helper.js";
+import redisHelper from "../helpers/redis-helper.js";
+import { sql } from "kysely";
 
 /**
  * Function which is used to list contact based on different filter conditions
- * @param {string} contactId
  * @param {{searchKey: string}} filters
  * @param {string[]} select
  * @param {number} skip
@@ -13,23 +13,23 @@ import { mySQL } from "../services/mysql-service.js";
  * @returns
  */
 
-export const listContacts = async ({ searchKey }, select, skip = 0, limit = 10, { mysqlService, redisService }) => {
-    const redisKey = `contact.${contactId}.list.` + base64Helper.jsonToBase64({ searchKey, skip, limit, select });
+export const listContacts = async ({ searchKey }, select, skip = 0, limit = 1, { mysqlService, redisService }) => {
+    const redisKey = `contact.${searchKey}.list.` + base64Helper.jsonToBase64({ searchKey, skip, limit, select });
     const redisData = await redisService.get(redisKey);
     if (redisData) return JSON.parse(redisData);
     
     let query = mysqlService
         .selectFrom('contact')
-        .select(select || ["contact_id", "contact_name","contact_email", "contact_phone","contact_address", "created_at", "updated_at"])
+        .select(select || ["contact_id", "fname","lname", "email", "message", "created_at", "updated_at"])
         .where((st) => st.and([ st("is_deleted", "=", false) ]))
-        .orderBy('contact_name')
+        .orderBy('fname')
         .limit(limit)
         .offset(skip);
     
     // search key
     if (searchKey) {
-        query = query.where((eb) => eb.or([queryHelper.to_tsvector(eb, "contact.contact_name", searchKey) , 
-        queryHelper.to_tsvector(eb, "contact.contact_email", searchKey) ]));
+        query = query
+        .where(sql`CONCAT(fname,lname,email,message, created_at, updated_at) LIKE ${`%${searchKey}%`}`) ;
     }
     const response = await query.execute();
     await redisService.set(redisKey, JSON.stringify(response), REDIS_DEFAULT_EXPIRY);
@@ -51,12 +51,12 @@ export const getContactById = async (contactId, select, { mysqlService, redisSer
     
     const response = await mysqlService
         .selectFrom("contact")
-        .select(select || ["contact_id", "contact_name","contact_email", "contact_phone","contact_address", "created_at", "updated_at"])
+        .select(select || ["contact_id", "fname","lname", "email", "message", "created_at", "updated_at"])
         .where((st) => st.and([ st("contact_id", "=", contactId), st("is_deleted", "=", false) ]))
         .execute();
     
     const data = response?.[0] || null;
-    await redisService.set(redisKey, JSON.stringify(data), REDIS_DEFAULT_EXPIRY);
+    if (data) await redisService.set(redisKey, JSON.stringify(data), REDIS_DEFAULT_EXPIRY);
     return data;
     };
 
@@ -87,7 +87,7 @@ export const createContact = async ({ fname, lname, email, message }, select, { 
         .execute();
     
         const data = result?.[0] || null;
-        await redisHelper.delRegex(`contact.${contactId}*`, { redisService });
+        // await redisHelper.delRegex(`contact.${contactId}*`, { redisService });
         return data;
     };
 

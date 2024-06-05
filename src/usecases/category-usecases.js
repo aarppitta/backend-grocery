@@ -98,7 +98,7 @@ export const createCategory = async (userId,{ name, description, image},select, 
 
 /**
  * Function which is used to update a category item
- * @param {string} categoryId
+ * @param {number} categoryId
  * @param {string} name
  * @param {string} image
  * @param {string} description

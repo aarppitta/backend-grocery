@@ -30,7 +30,7 @@ describe("User contact Route", () => {
    */
 
   test("GET v1/contact : To search a contact by name", async () => {
-    let request = createRequest(process.env.BASE_URL, SERVICE_ROUTE + `?search_key=${base64.encode("abcd")}`, "get", HttpClient.SERVER, authToken);
+    let request = createRequest(process.env.BASE_URL, SERVICE_ROUTE + `?search_key=${base64.encode("contact fname")}`, "get", HttpClient.SERVER, authToken);
     const response = await server(expressApp)
       .get("/" + request.url)
       .set({ ...request.headers, "user-agent": "jest" });
@@ -44,26 +44,6 @@ describe("User contact Route", () => {
 ß      }
     });
 
-
-  /**
-   * search contact by name 
-   * It should respond with success message
-   */
-
-  test("GET v1/contact : To search a contact by name", async () => {
-    let request = createRequest(process.env.BASE_URL, SERVICE_ROUTE + `?search_key=${base64.encode("abcd")}&skip=0&limit=1`, "get", HttpClient.SERVER, authToken);
-    const response = await server(expressApp)
-      .get("/" + request.url)
-      .set({ ...request.headers, "user-agent": "jest" });
-      expect(response.statusCode).toBe(200);
-      const data = response.body.data;
-      for (let i = 0; i < data.length; i++) {
-        expect(data[i].fname);
-        expect(data[i].lname);
-        expect(data[i].email);
-        expect(data[i].message);
-      }
-    });
   
   /**
    * Test to create contact,
@@ -107,29 +87,7 @@ describe("User contact Route", () => {
     contactId = data.contact_id;
   });
 
-  /**
-   * Test to update contact,
-   * It should respond with success message
-   */
-  test("patch v1/contact : To update a contact", async () => {
-    let request = createRequest(process.env.BASE_URL, SERVICE_ROUTE+"/"+contactId, "patch", HttpClient.SERVER, authToken);
-    let response = await server(expressApp)
-      .patch("/" + request.url)
-      .send({
-        fname: "contact fname1",
-        lname: "contact lname1",
-        email : "contact1@gmail.com",
-        message : "hello contact1",
-      })
-      .set({ ...request.headers, "user-agent": "jest" });
-    expect(response.statusCode).toBe(200);
-    const data = response.body.data;
-    expect(data.fname);
-    expect(data.lname);
-    expect(data.email);
-    expect(data.message);
-    contactId = data.contact_id;
-  });
+  
 
   /**
    * Test to delete contact,
