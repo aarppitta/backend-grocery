@@ -37,12 +37,18 @@ const isNumericInt = (field) =>
  * @type {Array} - The validation array.
  */
 
-export const userValidator = [body("user_name").notEmpty().withMessage("user_name is required").isLength({ max: 20 }).withMessage("user_name must not be more than 20 characters"),
-                                body("user_email").notEmpty().withMessage("user_email is required").isEmail().withMessage("user_email must be a valid email"),
-                                body("user_password").notEmpty().withMessage("user_password is required").isLength({ min: 8 }).withMessage("user_password must be at least 8 characters"),
-                                body("user_mobile").notEmpty().withMessage("user_mobile is required").isLength({ max: 15 }).withMessage("user_mobile must not be more than 15 characters"),
-                                body("user_role").notEmpty().withMessage("user_role is required").isLength({ max: 10 }).withMessage("user_role must not be more than 10 characters"),
-                                errorValidator];
+export const userValidator = [
+body("name").notEmpty().withMessage("name is required").isLength({ max: 20 }).withMessage("name must not be more than 20 characters"),
+
+body("display_name").notEmpty().withMessage("display_name is required").isLength({ max: 20 }).withMessage("display_name must not be more than 20 characters"),
+
+body("email").notEmpty().withMessage("email is required").isEmail().withMessage("email must be a valid email"),
+
+body("password").notEmpty().withMessage("password is required").isLength({ min: 8 }).withMessage("password must be at least 8 characters"),
+
+// body("gender").notEmpty().withMessage("Gender is required").isIn().withMessage("Invalid gender selection"),                              
+                               
+errorValidator];
 
 
 /**

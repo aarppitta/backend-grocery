@@ -6,9 +6,14 @@ import { accessControlManager } from "@secure-access-control/server";
 import metricsRoute from "./metrics/metrics-route.js";
 import mysqlService from "./services/mysql-service.js";
 import healthCheckController from "./controllers/healthcheck-controller.js";
+import contactRoute from "./routes/contact-route.js";
+import userRoute from "./routes/user-route.js";
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: '*',
+  credentials: true
+}));
 app.use(express.json());
 
 const SERVICE_BASE_URL = "/v1";
@@ -32,6 +37,8 @@ app.get(SERVICE_BASE_URL + "/health", healthCheckController);
 /**
  * Load all auth routes
  */
+app.use(SERVICE_BASE_URL + "/user", userRoute);
+app.use(SERVICE_BASE_URL+'/contact', contactRoute);
 app.use(SERVICE_BASE_URL,accessControlManager.auth, routes);
 
 /**

@@ -1,6 +1,7 @@
 import { REDIS_DEFAULT_EXPIRY } from "../resources/constants.js";
 import base64Helper from "../helpers/base64-helper.js";
 import redisHelper from "../helpers/redis-helper.js";
+import jwt from 'jsonwebtoken';
 
 /**
  * Function which is used to get the list of users
@@ -82,7 +83,16 @@ export const getUserByEmail = async (email, select, { mysqlService, redisService
     .execute();
   
     const data = response?.[0] || null;
-    if (data) await redisService.set(redisKey, JSON.stringify(data), REDIS_DEFAULT_EXPIRY);
+    if (data) {
+      await redisService.set(redisKey, JSON.stringify(data), REDIS_DEFAULT_EXPIRY);
+  
+      // Create a token
+      const token = jwt.sign({ id: data.user_id }, 'secret', { expiresIn: '1h' });
+  
+      // Add the token to the data object
+      data.token = token;
+    }
+  
     return data;
 };
 
